@@ -10,7 +10,8 @@ const short recordButton = 19;
 const short playButton = 18;
 
 //how many frames per second we are running at
-const FRAMERATE = 60
+//unsigned because it's never going to be zero
+const unsigned int FRAMERATE = 60
 
 //this value represents the number of frames we will be keeping in the buffer
 const unsigned int MOVIELENGTH = FRAMERATE * 120;
