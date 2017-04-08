@@ -14,14 +14,14 @@ const short playButton = 18;
 const unsigned int FRAMERATE = 60;
 
 //this value represents the number of frames we will be keeping in the buffer
-const unsigned int MOVIELENGTH = FRAMERATE * 120;
+const int MOVIELENGTH = FRAMERATE * 120;
 						//the last number in this line is how many seconds the movie lasts
 
 //allocate memory for the movie
 //an int would probably work here but I don't want to deal with negative numbers
 //int is two bytes and we need two bytes for frames so this just works
 unsigned int movieBuffer[MOVIELENGTH];
-unsigned int *movie = &movieBuffer;
+unsigned int *movie = movieBuffer;
 
 void setup(){
 	//set the clock speed
@@ -41,7 +41,7 @@ void setup(){
 
 void recordMovie(){
 	//set data pin to read
-	pinMode(data, INPUT);
+	pinMode(dataPin, INPUT);
 
 	//i represents the current frame
 	for(int i = 0;i<MOVIELENGTH;i++){
@@ -66,7 +66,7 @@ void recordMovie(){
 
 void playMovie(){
 	//set data pin to WRITE
-	pintMode(DATA, OUTPUT);
+	pinMode(dataPin, OUTPUT);
 
 	//i represents the current frame
 	for(int i = 0;i<MOVIELENGTH;i++){
@@ -87,7 +87,7 @@ void playMovie(){
 
 
 void emptyBuffer(){
-	for(int i=0;i<movieBuffer.length;i++){
+	for(int i=0;i<MOVIELENGTH;i++){
 		movieBuffer[i] = 15; //that sets the bits to 0000000000001111
 							 //the first twelve bits are the inputs
 							 //the inputs are sent in the following order:
@@ -100,11 +100,11 @@ void emptyBuffer(){
 
 void loop(){
 	//listen to buttons
-	recordState = digitalRead(recordButton);
-	playState = digitalRead(playButton);
+	int recordState = digitalRead(recordButton);
+	int playState = digitalRead(playButton);
 
 	//respond to buttons
-	digitalWrite(led, HIGH);
+	digitalWrite(ledPin, HIGH);
 	if (recordState == HIGH){
 		digitalWrite(ledPin, LOW);
 		recordMovie();
