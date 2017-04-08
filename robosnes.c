@@ -46,8 +46,8 @@ void setup(){
 void waitFor(int waitingPin){
 	int pinStatus;
 	do {
-		latchStatus = digitalRead(latchPin);
-	} while(latchStatus != HIGH)
+		pinStatus= digitalRead(waitingPin);
+	} while(waitingPin != HIGH)
 }
 
 void recordMovie(){
@@ -56,7 +56,7 @@ void recordMovie(){
 
 	//i represents the current frame
 	for(int i = 0;i<MOVIELENGTH;i++){
-		waitFor(latchPin)
+		waitFor(latchPin);
 
 		for(int currentBit=0;currentBit<11;currentBit++){
 			waitFor(clockPin)
@@ -81,10 +81,10 @@ void playMovie(){
 
 	//i represents the current frame
 	for(int i = 0;i<MOVIELENGTH;i++){
-		waitFor(latchPin)
+		waitFor(latchPin);
 
 		for(int currentBit=0;currentBit<11;currentBit++){
-			waitFor(clockPin)
+			waitFor(clockPin);
 
 			//read data pin status (1 or 0)
 			//this will give us HIGH or LOW
