@@ -27,14 +27,14 @@ void setup(){
 	//we might not need to
 
 	//set the pinmodes for the pins that don't change modes
-	pinMode(led, OUTPUT);
+	pinMode(ledPin, OUTPUT);
 	pinMode(recordButton, INPUT);
 	pinMode(playButton, INPUT);
-	pinMode(clock, INPUT)
-	pinMode(latch, INPUT)
+	pinMode(clockPin, INPUT);
+	pinMode(latchPin, INPUT);
 
 	//initialize movie buffer to 0
-	emptyBuffer()
+	emptyBuffer();
 
 
 }
@@ -71,10 +71,10 @@ void recordMovie(){
 			//this will give us HIGH or LOW
 			//HIGH casts as an int to 1 and as a bool to true
 			//LOW casts as an int to 0 and as a bool to false
-			pinStatus = (int)digitalRead(data)
+			pinStatus = (int)digitalRead(data);
 
 			//every frame we write the inputs to the buffer
-			bitWrite(*(movie + i), currentBit, pinStatus)
+			bitWrite(*(movie + i), currentBit, pinStatus);
 
 
 		}
@@ -99,13 +99,13 @@ void playMovie(){
 			//this will give us HIGH or LOW
 			//HIGH casts as an int to 1 and as a bool to true
 			//LOW casts as an int to 0 and as a bool to false
-			pinStatus = bitRead(*(movie + i), currentBit)
-			digitalWrite(data, pinStatus)
+			pinStatus = bitRead(*(movie + i), currentBit);
+			digitalWrite(dataPin, pinStatus);
 }
 
 //keeping code DRY since 2017.
 void prepareMovie(){
-	digitalWrite(led, LOW);
+	digitalWrite(ledPin, LOW);
 	//*movieIndex = &movieBuffer;
 }
 
