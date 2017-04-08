@@ -11,15 +11,17 @@ const short playButton = 18;
 
 //how many frames per second we are running at
 //unsigned because it's never going to be zero
-const unsigned int FRAMERATE = 60
+const unsigned int FRAMERATE = 60;
 
 //this value represents the number of frames we will be keeping in the buffer
 const unsigned int MOVIELENGTH = FRAMERATE * 120;
 						//the last number in this line is how many seconds the movie lasts
 
 //allocate memory for the movie
-word movieBuffer[MOVIELENGTH];
-word *movie = &movieBuffer;
+//an int would probably work here but I don't want to deal with negative numbers
+//int is two bytes and we need two bytes for frames so this just works
+unsigned int movieBuffer[MOVIELENGTH];
+unsigned int *movie = &movieBuffer;
 
 void setup(){
 	//set the clock speed
@@ -35,25 +37,6 @@ void setup(){
 
 	//initialize movie buffer to 0
 	emptyBuffer();
-
-
-}
-
-void loop(){
-	//listen to buttons
-	recordState = digitalRead(recordButton);
-	playState = digitalRead(playButton);
-
-	//respond to buttons
-	digitalWrite(led, HIGH);
-	if (recordState == HIGH){
-		prepareMovie();
-		recordMovie();
-	}
-	else if (playState == HIGH){
-		prepareMovie():
-		playMovie();
-	}
 }
 
 void recordMovie(){
@@ -71,7 +54,7 @@ void recordMovie(){
 			//this will give us HIGH or LOW
 			//HIGH casts as an int to 1 and as a bool to true
 			//LOW casts as an int to 0 and as a bool to false
-			pinStatus = (int)digitalRead(data);
+			int pinStatus = (int)digitalRead(data);
 
 			//every frame we write the inputs to the buffer
 			bitWrite(*(movie + i), currentBit, pinStatus);
@@ -96,15 +79,12 @@ void playMovie(){
 			//this will give us HIGH or LOW
 			//HIGH casts as an int to 1 and as a bool to true
 			//LOW casts as an int to 0 and as a bool to false
-			pinStatus = bitRead(*(movie + i), currentBit);
+			int pinStatus = bitRead(*(movie + i), currentBit);
 			digitalWrite(dataPin, pinStatus);
+		}
+	}
 }
 
-//keeping code DRY since 2017.
-void prepareMovie(){
-	digitalWrite(ledPin, LOW);
-	//*movieIndex = &movieBuffer;
-}
 
 void emptyBuffer(){
 	for(int i=0;i<movieBuffer.length;i++){
@@ -116,3 +96,22 @@ void emptyBuffer(){
 									//E = sElEct
 	}
 }
+
+
+void loop(){
+	//listen to buttons
+	recordState = digitalRead(recordButton);
+	playState = digitalRead(playButton);
+
+	//respond to buttons
+	digitalWrite(led, HIGH);
+	if (recordState == HIGH){
+		digitalWrite(ledPin, LOW);
+		recordMovie();
+	}
+	else if (playState == HIGH){
+		digitalWrite(ledPin, LOW);
+		playMovie();
+	}
+}
+
