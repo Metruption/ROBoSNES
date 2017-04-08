@@ -1,21 +1,29 @@
 
 //the pins that we will solder to the snes
-const int data = 23;
-const int clock = 22;
-const int latch = 21;
+const short data = 23;
+const short clock = 22;
+const short latch = 21;
 
 //these pins we do not solder to the snes
-const int led = 20;
-const int recordButton = 19;
-const int playButton = 18;
+const short led = 20;
+const short recordButton = 19;
+const short playButton = 18;
 
-//allocate memory for the movie (14 KILOBYTES!!!)
-word movieBuffer[7200];
-word *movieIndex;
+//how many frames per second we are running at
+const FRAMERATE = 60
+
+//this value represents the number of frames we will be keeping in the buffer
+const unsigned int MOVIELENGTH = FRAMERATE * 120;
+						//the last number in this line is how many seconds the movie lasts
+
+//allocate memory for the movie
+word movieBuffer[MOVIELENGTH];
+word *movie = &movieBuffer;
 
 void setup(){
 	//set the clock speed
 	//will do this please
+	//we might not need to
 
 	//set the pinmodes for the pins that don't change modes
 	pinMode(led, OUTPUT);
@@ -25,9 +33,8 @@ void setup(){
 	pinMode(latch, INPUT)
 
 	//initialize movie buffer to 0
-	for(int i=0;i<movieBuffer.length;i++){
-		movieBuffer[i] = 0;
-	}
+	emptyBuffer()
+
 
 }
 
@@ -52,6 +59,27 @@ void recordMovie(){
 	//set data pin to read
 	pinMode(data, INPUT);
 
+	//i represents the current frame
+	for(int i = 0;i<MOVIELENGTH;i++){
+		//@todo(will): wait for latch
+
+		for(int currentBit=0;currentBit<11;currentBit++){
+			//@todo(will): wait for the clock
+
+			//read data pin status (1 or 0)
+			//this will give us HIGH or LOW
+			//HIGH casts as an int to 1 and as a bool to true
+			//LOW casts as an int to 0 and as a bool to false
+			pinStatus = (int)digitalRead(data)
+
+			//every frame we write the inputs to the buffer
+			bitWrite(*(movie + i), currentBit, pinStatus)
+
+
+		}
+	}
+
+
 	//do stuff
 }
 
@@ -59,11 +87,34 @@ void playMovie(){
 	//set data pin to WRITE
 	pintMode(DATA, OUTPUT);
 
-	//do stuff
+	//i represents the current frame
+	for(int i = 0;i<MOVIELENGTH;i++){
+		//@todo(will): wait for latch
+
+		for(int currentBit=0;currentBit<11;currentBit++){
+			//@todo(will): wait for the clock
+
+			//read data pin status (1 or 0)
+			//this will give us HIGH or LOW
+			//HIGH casts as an int to 1 and as a bool to true
+			//LOW casts as an int to 0 and as a bool to false
+			pinStatus = bitRead(*(movie + i), currentBit)
+			digitalWrite(data, pinStatus)
 }
 
 //keeping code DRY since 2017.
 void prepareMovie(){
 	digitalWrite(led, LOW);
-	*movieIndex = &movieBuffer;
+	//*movieIndex = &movieBuffer;
+}
+
+void emptyBuffer(){
+	for(int i=0;i<movieBuffer.length;i++){
+		movieBuffer[i] = 15; //that sets the bits to 0000000000001111
+							 //the first twelve bits are the inputs
+							 //the inputs are sent in the following order:
+							 	//BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
+								//* = STARt
+									//E = sElEct
+	}
 }
