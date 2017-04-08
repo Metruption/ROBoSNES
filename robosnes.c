@@ -54,7 +54,7 @@ void recordMovie(){
 			//this will give us HIGH or LOW
 			//HIGH casts as an int to 1 and as a bool to true
 			//LOW casts as an int to 0 and as a bool to false
-			int pinStatus = (int)digitalRead(data);
+			int pinStatus = (int)digitalRead(dataPin);
 
 			//every frame we write the inputs to the buffer
 			bitWrite(*(movie + i), currentBit, pinStatus);
