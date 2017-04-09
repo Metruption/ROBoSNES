@@ -5,7 +5,7 @@ const short clockPin = 22;
 const short latchPin = 21;
 
 //these pins we do not solder to the snes
-const short ledPin = 20;
+const short ledPin = 13;
 const short recordButton = 19;
 const short playButton = 18;
 
