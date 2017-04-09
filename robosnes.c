@@ -118,13 +118,13 @@ bool longPress(int pressPin){
 		}
 		delay(50);
 	}
-	return true
+	return true;
 }
 
 void loop(){
 	//listen to and respond to buttons
 	digitalWrite(ledPin, HIGH);
-	if (longpress(recordButton)){
+	if (longPress(recordButton)){
 		digitalWrite(ledPin, LOW);
 		recordMovie();
 	}
