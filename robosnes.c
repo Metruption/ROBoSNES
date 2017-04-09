@@ -41,16 +41,6 @@ void setup(){
   emptyBuffer();
 }
 
-//preconditions:
-//    waitingPin is a pin set to input mode
-//postconditions:
-//    makes the program wait until the waitingPin is set to HIGH
-void waitFor(int waitingPin){
-  int pinStatus;
-  do {
-    pinStatus= digitalRead(waitingPin);
-  } while(pinStatus != HIGH);
-}
 
 void recordMovie(){
   //set data pin to read
@@ -58,10 +48,10 @@ void recordMovie(){
 
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
-    waitFor(latchPin);
+    pulseIn(latchPin, HIGH);
 
     for(int currentBit=0;currentBit<16;currentBit++){
-      waitFor(clockPin);
+      pulseIn(clockPin, HIGH);
 
       //read data pin status (1 or 0)
       //this will give us HIGH or LOW
@@ -83,10 +73,10 @@ void playMovie(){
 
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
-    waitFor(latchPin);
+    pulseIn(latchPin,HIGH );
 
     for(int currentBit=0;currentBit<16;currentBit++){
-      waitFor(clockPin);
+      pulseIn(clockPin,HIGH );
 
       //read data pin status (1 or 0)
       //this will give us HIGH or LOW
