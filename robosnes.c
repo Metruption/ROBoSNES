@@ -5,17 +5,17 @@ const short clockPin = 22;
 const short latchPin = 21;
 
 //these pins we do not solder to the snes
-const short ledPin = 20;
+const short ledPin = 13;
 const short recordButton = 19;
-const short playButton = 14;
+const short playButton = 18;
 
 //how many frames per second we are running at
 //unsigned because it's never going to be zero
 const unsigned int FRAMERATE = 60;
 
 //this value represents the number of frames we will be keeping in the buffer
-const int MOVIELENGTH = FRAMERATE * 120;
-						//the last number in this line is how many seconds the movie lasts
+const int MOVIELENGTH = FRAMERATE * 30;
+            //the last number in this line is how many seconds the movie lasts
 
 //allocate memory for the movie
 //an int would probably work here but I don't want to deal with negative numbers
@@ -24,105 +24,104 @@ unsigned int movieBuffer[MOVIELENGTH];
 unsigned int *movie = movieBuffer;
 
 void setup(){
-	//set the clock speed
-	//will do this please
-	//we might not need to
+  //set the clock speed
+  //will do this please
+  //we might not need to
 
-	//set the pinmodes for the pins that don't change modes
-	pinMode(ledPin, OUTPUT);
-	pinMode(recordButton, INPUT);
-	pinMode(playButton, INPUT);
-	pinMode(clockPin, INPUT);
-	pinMode(latchPin, INPUT);
+  //set the pinmodes for the pins that don't change modes
+  pinMode(ledPin, OUTPUT);
+  pinMode(recordButton, INPUT);
+  pinMode(playButton, INPUT);
+  pinMode(clockPin, INPUT);
+  pinMode(latchPin, INPUT);
 
-	//initialize movie buffer to 0
-	emptyBuffer();
+  //initialize movie buffer to 0
+  emptyBuffer();
 }
 
 //preconditions:
-//		waitingPin is a pin set to input mode
+//    waitingPin is a pin set to input mode
 //postconditions:
-//		makes the program wait until the waitingPin is set to HIGH
+//    makes the program wait until the waitingPin is set to HIGH
 void waitFor(int waitingPin){
-	int pinStatus;
-	do {
-		pinStatus= digitalRead(waitingPin);
-	} while(pinStatus != HIGH)
+  int pinStatus;
+  do {
+    pinStatus= digitalRead(waitingPin);
+  } while(pinStatus != HIGH);
 }
 
 void recordMovie(){
-	//set data pin to read
-	pinMode(dataPin, INPUT);
+  //set data pin to read
+  pinMode(dataPin, INPUT);
 
-	//i represents the current frame
-	for(int i = 0;i<MOVIELENGTH;i++){
-		waitFor(latchPin);
+  //i represents the current frame
+  for(int i = 0;i<MOVIELENGTH;i++){
+    waitFor(latchPin);
 
-		for(int currentBit=0;currentBit<11;currentBit++){
-			waitFor(clockPin)
+    for(int currentBit=0;currentBit<16;currentBit++){
+      waitFor(clockPin);
 
-			//read data pin status (1 or 0)
-			//this will give us HIGH or LOW
-			//HIGH casts as an int to 1 and as a bool to true
-			//LOW casts as an int to 0 and as a bool to false
-			int pinStatus = digitalRead(dataPin);
+      //read data pin status (1 or 0)
+      //this will give us HIGH or LOW
+      //HIGH casts as an int to 1 and as a bool to true
+      //LOW casts as an int to 0 and as a bool to false
+      int pinStatus = digitalRead(dataPin);
 
-			//every frame we write the inputs to the buffer
-			bitWrite(*(movie + i), currentBit, pinStatus);
+      //every frame we write the inputs to the buffer
+      bitWrite(*(movie + i), currentBit, pinStatus);
 
 
-		}
-	}
+    }
+  }
 }
 
 void playMovie(){
-	//set data pin to WRITE
-	pinMode(dataPin, OUTPUT);
+  //set data pin to WRITE
+  pinMode(dataPin, OUTPUT);
 
-	//i represents the current frame
-	for(int i = 0;i<MOVIELENGTH;i++){
-		waitFor(latchPin);
+  //i represents the current frame
+  for(int i = 0;i<MOVIELENGTH;i++){
+    waitFor(latchPin);
 
-		for(int currentBit=0;currentBit<11;currentBit++){
-			waitFor(clockPin);
+    for(int currentBit=0;currentBit<12;currentBit++){
+      waitFor(clockPin);
 
-			//read data pin status (1 or 0)
-			//this will give us HIGH or LOW
-			//HIGH casts as an int to 1 and as a bool to true
-			//LOW casts as an int to 0 and as a bool to false
-			int pinStatus = bitRead(*(movie + i), currentBit);
-			digitalWrite(dataPin, pinStatus);
-		}
-	}
+      //read data pin status (1 or 0)
+      //this will give us HIGH or LOW
+      //HIGH casts as an int to 1 and as a bool to true
+      //LOW casts as an int to 0 and as a bool to false
+      int pinStatus = bitRead(*(movie + i), currentBit);
+      digitalWrite(dataPin, pinStatus);
+    }
+  }
 }
 
 
 void emptyBuffer(){
-	for(int i=0;i<MOVIELENGTH;i++){
-		movieBuffer[i] = 15; //that sets the bits to 0000000000001111
-							 //the first twelve bits are the inputs
-							 //the inputs are sent in the following order:
-							 	//BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
-								//* = STARt
-									//E = sElEct
-	}
+  for(int i=0;i<MOVIELENGTH;i++){
+    movieBuffer[i] = 0; //that sets the bits to 0000000000001111
+               //the first twelve bits are the inputs
+               //the inputs are sent in the following order:
+                //BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
+                //* = STARt
+                  //E = sElEct
+  }
 }
 
 
 void loop(){
-	//listen to buttons
-	int recordState = digitalRead(recordButton);
-	int playState = digitalRead(playButton);
+  //listen to buttons
+  int recordState = digitalRead(recordButton);
+  int playState = digitalRead(playButton);
 
-	//respond to buttons
-	digitalWrite(ledPin, HIGH);
-	if (recordState == HIGH){
-		digitalWrite(ledPin, LOW);
-		recordMovie();
-	}
-	else if (playState == HIGH){
-		digitalWrite(ledPin, LOW);
-		playMovie();
-	}
+  //respond to buttons
+  digitalWrite(ledPin, HIGH);
+  if (recordState == HIGH){
+    digitalWrite(ledPin, LOW);
+    recordMovie();
+  }
+  else if (playState == HIGH){
+    digitalWrite(ledPin, LOW);
+    playMovie();
+  }
 }
-
