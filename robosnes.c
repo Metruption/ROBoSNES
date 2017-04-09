@@ -5,9 +5,9 @@ const short clockPin = 22;
 const short latchPin = 21;
 
 //these pins we do not solder to the snes
-const short ledPin = 13;
+const short ledPin = 20;
 const short recordButton = 19;
-const short playButton = 18;
+const short playButton = 14;
 
 //how many frames per second we are running at
 //unsigned because it's never going to be zero
@@ -47,7 +47,7 @@ void waitFor(int waitingPin){
 	int pinStatus;
 	do {
 		pinStatus= digitalRead(waitingPin);
-	} while(pinStatus != HIGH);
+	} while(pinStatus != HIGH)
 }
 
 void recordMovie(){
@@ -59,7 +59,7 @@ void recordMovie(){
 		waitFor(latchPin);
 
 		for(int currentBit=0;currentBit<11;currentBit++){
-			waitFor(clockPin);
+			waitFor(clockPin)
 
 			//read data pin status (1 or 0)
 			//this will give us HIGH or LOW
@@ -99,36 +99,28 @@ void playMovie(){
 
 void emptyBuffer(){
 	for(int i=0;i<MOVIELENGTH;i++){
-		movieBuffer[i] = 0; //it is 0 now because I say so!!!!
-		/*
-		'Multiple exclamation marks,' he went on, shaking his head, 'are a sure sign of a diseased mind.'
-		- Eric (Terry Pratchett)
-		*/
+		movieBuffer[i] = 15; //that sets the bits to 0000000000001111
+							 //the first twelve bits are the inputs
+							 //the inputs are sent in the following order:
+							 	//BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
+								//* = STARt
+									//E = sElEct
 	}
 }
 
-//preconditions: presspin will sometimes be true (like a button)
-//postconditions: returns true when it held for .5 seconds
-//which we define as being true 10 times in a row within 50ms increments
-bool longPress(int pressPin){
-	int pressState = digitalRead(pressPin);
-	for(int i=0;i<10;i++){
-		if(pressState != HIGH){
-			return false;
-		}
-		delay(50);
-	}
-	return true;
-}
 
 void loop(){
-	//listen to and respond to buttons
+	//listen to buttons
+	int recordState = digitalRead(recordButton);
+	int playState = digitalRead(playButton);
+
+	//respond to buttons
 	digitalWrite(ledPin, HIGH);
-	if (longPress(recordButton)){
+	if (recordState == HIGH){
 		digitalWrite(ledPin, LOW);
 		recordMovie();
 	}
-	else if (longpress(playButton)){
+	else if (playState == HIGH){
 		digitalWrite(ledPin, LOW);
 		playMovie();
 	}
