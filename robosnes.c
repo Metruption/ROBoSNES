@@ -99,28 +99,36 @@ void playMovie(){
 
 void emptyBuffer(){
 	for(int i=0;i<MOVIELENGTH;i++){
-		movieBuffer[i] = 15; //that sets the bits to 0000000000001111
-							 //the first twelve bits are the inputs
-							 //the inputs are sent in the following order:
-							 	//BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
-								//* = STARt
-									//E = sElEct
+		movieBuffer[i] = 0; //it is 0 now because I say so!!!!
+		/*
+		'Multiple exclamation marks,' he went on, shaking his head, 'are a sure sign of a diseased mind.'
+		- Eric (Terry Pratchett)
+		*/
 	}
 }
 
+//preconditions: presspin will sometimes be true (like a button)
+//postconditions: returns true when it held for .5 seconds
+//which we define as being true 10 times in a row within 50ms increments
+bool longPress(int pressPin){
+	int pressState = digitalRead(pressPin);
+	for(int i=0;i<10;i++){
+		if(pressState != HIGH){
+			return false;
+		}
+		delay(50);
+	}
+	return true
+}
 
 void loop(){
-	//listen to buttons
-	int recordState = digitalRead(recordButton);
-	int playState = digitalRead(playButton);
-
-	//respond to buttons
+	//listen to and respond to buttons
 	digitalWrite(ledPin, HIGH);
-	if (recordState == HIGH){
+	if (longpress(recordButton)){
 		digitalWrite(ledPin, LOW);
 		recordMovie();
 	}
-	else if (playState == HIGH){
+	else if (longpress(playButton)){
 		digitalWrite(ledPin, LOW);
 		playMovie();
 	}
