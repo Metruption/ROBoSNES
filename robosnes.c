@@ -47,7 +47,7 @@ void waitFor(int waitingPin){
 	int pinStatus;
 	do {
 		pinStatus= digitalRead(waitingPin);
-	} while(waitingPin != HIGH);
+	} while(pinStatus != HIGH);
 }
 
 void recordMovie(){
