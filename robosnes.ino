@@ -7,14 +7,14 @@ const short latchPin = 21;
 //these pins we do not solder to the snes
 const short ledPin = 13;
 const short recordButton = 19;
-const short playButton = 18;
+const short playButton = 14;
 
 //how many frames per second we are running at
 //unsigned because it's never going to be zero
 const unsigned int FRAMERATE = 60;
 
 //this value represents the number of frames we will be keeping in the buffer
-const int MOVIELENGTH = FRAMERATE * 30;
+const int MOVIELENGTH = FRAMERATE * 45;
             //the last number in this line is how many seconds the movie lasts
 
 //allocate memory for the movie
@@ -30,10 +30,12 @@ void setup(){
 
   //set the pinmodes for the pins that don't change modes
   pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
   pinMode(recordButton, INPUT);
   pinMode(playButton, INPUT);
   pinMode(clockPin, INPUT);
   pinMode(latchPin, INPUT);
+  digitalWrite(ledPin, LOW);
 
   //initialize movie buffer to 0
   emptyBuffer();
@@ -83,7 +85,7 @@ void playMovie(){
   for(int i = 0;i<MOVIELENGTH;i++){
     waitFor(latchPin);
 
-    for(int currentBit=0;currentBit<12;currentBit++){
+    for(int currentBit=0;currentBit<16;currentBit++){
       waitFor(clockPin);
 
       //read data pin status (1 or 0)
@@ -99,7 +101,7 @@ void playMovie(){
 
 void emptyBuffer(){
   for(int i=0;i<MOVIELENGTH;i++){
-    movieBuffer[i] = 0; //that sets the bits to 0000000000001111
+    movieBuffer[i] = 15; //that sets the bits to 0000000000001111
                //the first twelve bits are the inputs
                //the inputs are sent in the following order:
                 //BY*E^v<>AXLR it sends 16 bits and the next four are just junk data
@@ -125,3 +127,4 @@ void loop(){
     playMovie();
   }
 }
+
