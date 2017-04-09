@@ -57,6 +57,7 @@ void recordMovie(){
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
     waitFor(latchPin);
+    digitalWrite(ledPin, HIGH);
 
     for(int currentBit=0;currentBit<16;currentBit++){
       waitFor(clockPin);
@@ -72,6 +73,7 @@ void recordMovie(){
 
 
     }
+    digitalWrite(ledPin, LOW);
   }
 }
 
@@ -82,7 +84,7 @@ void playMovie(){
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
     waitFor(latchPin);
-
+	digitalWrite(ledPin, HIGH);
     for(int currentBit=0;currentBit<12;currentBit++){
       waitFor(clockPin);
 
@@ -93,6 +95,7 @@ void playMovie(){
       int pinStatus = bitRead(*(movie + i), currentBit);
       digitalWrite(dataPin, pinStatus);
     }
+    digitalWrite(ledPin, LOW);
   }
 }
 
