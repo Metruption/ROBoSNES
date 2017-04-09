@@ -7,7 +7,7 @@ const short latchPin = 21;
 //these pins we do not solder to the snes
 const short ledPin = 13;
 const short recordButton = 19;
-const short playButton = 18;
+const short playButton = 14;
 
 //how many frames per second we are running at
 //unsigned because it's never going to be zero
@@ -22,7 +22,8 @@ const int MOVIELENGTH = FRAMERATE * 45;
 //int is two bytes and we need two bytes for frames so this just works
 unsigned int movieBuffer[MOVIELENGTH];
 unsigned int *movie = movieBuffer;
-
+ int recordState = digitalRead(recordButton);
+  int playState = digitalRead(playButton);
 void setup(){
   //set the clock speed
   //will do this please
@@ -36,7 +37,7 @@ void setup(){
   pinMode(clockPin, INPUT);
   pinMode(latchPin, INPUT);
   digitalWrite(ledPin, LOW);
-
+  
   //initialize movie buffer to 0
   emptyBuffer();
 }
@@ -49,6 +50,7 @@ void recordMovie(){
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
     pulseIn(latchPin, HIGH);
+    digitalWrite(ledPin, HIGH);
 
     for(int currentBit=0;currentBit<16;currentBit++){
       pulseIn(clockPin, HIGH);
@@ -64,6 +66,7 @@ void recordMovie(){
 
 
     }
+    digitalWrite(ledPin, LOW);
   }
 }
 
@@ -74,6 +77,7 @@ void playMovie(){
   //i represents the current frame
   for(int i = 0;i<MOVIELENGTH;i++){
     pulseIn(latchPin,HIGH );
+    digitalWrite(ledPin, HIGH);
 
     for(int currentBit=0;currentBit<16;currentBit++){
       pulseIn(clockPin,HIGH );
@@ -85,6 +89,7 @@ void playMovie(){
       int pinStatus = bitRead(*(movie + i), currentBit);
       digitalWrite(dataPin, pinStatus);
     }
+    digitalWrite(ledPin, LOW);
   }
 }
 
@@ -103,8 +108,8 @@ void emptyBuffer(){
 
 void loop(){
   //listen to buttons
-  int recordState = digitalRead(recordButton);
-  int playState = digitalRead(playButton);
+  recordState = digitalRead(recordButton);
+  playState = digitalRead(playButton);
 
   //respond to buttons
   digitalWrite(ledPin, HIGH);
